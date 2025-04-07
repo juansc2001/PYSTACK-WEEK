@@ -20,4 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('usuarios/',include('usuarios.urls') ), #<< (include) É responsavel por criar uma lista de urls dentro da url usuario
+    path('mentorados/', include('mentorados.url')),
 ]
