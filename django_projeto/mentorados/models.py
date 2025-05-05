@@ -7,7 +7,7 @@ class navigator(models.Model):#navigator sao pessoas que trabalhao junto ao ment
     usuario = models.ForeignKey(User, on_delete=models.CASCADE,)
 
     def __str__(self):
-        return self.nome
+        return f" navagator: {self.nome} mentor: {self.usuario}"
 
 class Mentorados(models.Model):
     escolhas = (
@@ -24,5 +24,8 @@ class Mentorados(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, ) # o primeiro parametro esta relacioando a tabela aos User, ou seja, cada User vai ser responsavel por um objeto ou tabela do mentorados.
     # on_delete=models.CASCADE indica que quando um usuario relacionado a tabela for excluido ou deletado do banco de dados, todas as tabelas que estao relacionadas a esse usuario serao deletadas
     navegador = models.ForeignKey(navigator, null=True, blank= True, on_delete= models.CASCADE )
+
+    def __str__(self):
+        return f" mentorado: {self.nome} usuario: {self.usuario} {self.navegador}"
 
 
