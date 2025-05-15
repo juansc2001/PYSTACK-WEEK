@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.models import User
-from .models import Mentorados, navigator
+from .models import Mentorados, navigator, disponibilidade_horario
 from django.contrib import messages
 from django.contrib.messages import constants
+from datetime import datetime, timedelta
 # Create your views here.
 
 def mentorados(request):
@@ -56,4 +57,31 @@ def mentorados(request):
 
 
 def abrirhorarios(request):
-    return HttpResponse("pagina de abrir horarios")
+    if request.method == "GET":
+        return render(request, 'reunioes.html')
+    elif request.method == "POST":
+        data_string = request.POST.get('data')#coleta a data do formulario e guarda como uma string
+        data = datetime.strptime(data_string, '%Y-%m-%dT%H:%M')#como nao é possivel fazer calculos com string função datetimestrptime faz uma conversao de string para datetime type 
+
+        print(f"usuario: {request.user}")
+        disponibilidades = disponibilidade_horario(
+            data_inicial = data,
+            mentor = request.user,
+        )
+
+        horarios_disponiveis = disponibilidade_horario.objects.filter(mentor = request.user).filter(
+            #__gte signifca se é maior ou igual, ou seja, quando eu quero identificar se algo é maior ou igual eu utilizo __gte, se for apenas maior(>) usariamos __gt
+            data_inicial__gte = data - timedelta( minutes=50 ),
+            #__lte lessthan ou menor ou igual(>=)
+            data_inicial__lte = data + timedelta( minutes = 50)
+        )
+
+        if horarios_disponiveis.exists():
+            messages.add_message(request, constants.ERROR, 'Voce ja possui uma reuniao em aberto')
+            return redirect('marcar_reunioes')
+
+        disponibilidades.save()
+
+        
+        return HttpResponse(data)
+    
